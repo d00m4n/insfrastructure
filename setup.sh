@@ -1,3 +1,5 @@
+apt install docker sudo -y
+
 repos="majord00m tuitBot tabout bittrexBot cmcairbot dtools dropBot "
 path="../bots"
 for repo in $repos
