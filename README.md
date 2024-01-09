@@ -1,2 +1,2 @@
-# insfrastructure
-mount infrastructure in new debian server
+# Insfrastructure
+Set up my infrastructure in a debian server
