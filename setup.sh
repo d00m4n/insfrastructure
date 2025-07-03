@@ -7,19 +7,40 @@ GREEN='\033[0;32m'
 CYAN='\033[0;36m'
 # echo -e "I ${RED}love${NC} Stack Overflow"
 
-# Check if the script is running as root
+#Check if the script is running as root
 if [[ $EUID -ne 0 ]]; then
    echo -e "- ${RED}This script must be run as root${NC}" 1>&2
    exit 1
 fi
-user="$1"
 
-if [ -z "$user" ]; then
-	echo -e "- ${RED}Please specify user${NC}"
-	exit 1
+if [ -z "$1" ]; then
+    echo -e "- ${RED}Please specify user${NC}"
+    read -p "Enter username: " user
+    if [ -z "$user" ]; then
+        echo -e "- ${RED}No username provided. Exiting.${NC}"
+        exit 1
+    fi
+else
+ user="$1"
 fi
 
-echo -e "User: ${CYAN}$user${NC}"
+
+#if [ -z "$user" ]; then
+#	echo -e "- ${RED}Please specify user${NC}"
+#	exit 1
+#fi
+
+#echo -e "Add usEr: ${CYAN}$user${NC}"
+#adduser $1
+echo -e "- ${GREEN}Creating user $user...${NC}"
+sudo adduser --gecos "$user" $user
+
+if [ $? -eq 0 ]; then
+    echo -e "- ${GREEN}User $user successfully created${NC}"
+else
+    echo -e "- ${RED}Error creating user $user${NC}"
+    exit 1
+fi
 
 # Install necessary packages
 apt-get update && apt-get install -y \
