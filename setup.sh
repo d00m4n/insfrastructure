@@ -5,7 +5,9 @@ RED='\033[0;31m'
 NC='\033[0m' # No Color
 GREEN='\033[0;32m'
 CYAN='\033[0;36m'
-# echo -e "I ${RED}love${NC} Stack Overflow"
+# Package list file
+APT_LIST_FILE="apt.list"
+
 
 #Check if the script is running as root
 if [[ $EUID -ne 0 ]]; then
@@ -30,7 +32,7 @@ fi
 #	exit 1
 #fi
 
-#echo -e "Add usEr: ${CYAN}$user${NC}"
+#echo "Add usEr: ${CYAN}$user${NC}"
 #adduser $1
 echo -e "- ${GREEN}Creating user $user...${NC}"
 sudo adduser --gecos "$user" $user
@@ -39,7 +41,7 @@ if [ $? -eq 0 ]; then
     echo -e "- ${GREEN}User $user successfully created${NC}"
 else
     echo -e "- ${RED}Error creating user $user${NC}"
-    exit 1
+    # exit 1
 fi
 
 # Install necessary packages
@@ -63,20 +65,58 @@ echo -e "- ${CYAN}Setup dockers repository${NC}"
 echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
   $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
 
+# apt-get update && apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin -y
 
-apt-get update && apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin -y
+
+# Check if file exists and proceed only if it does
+if [ -f "$APT_LIST_FILE" ]; then
+    echo -e "- ${CYAN}Reading packages from $APT_LIST_FILE...${NC}"
+
+    # Update package list
+    echo -e "- ${CYAN}APT UPDATE${NC}"
+    sudo apt update
+
+    # Read file line by line and install each package
+    while IFS= read -r package || [[ -n "$package" ]]; do
+        # Skip empty lines and comments (starting with #)
+        if [[ -z "$package" || "$package" =~ ^[[:space:]]*# ]]; then
+            continue
+        fi
+        
+        # Remove leading/trailing whitespace
+        package=$(echo "$package" | xargs)
+        echo -e "- ${CYAN}Installing $package...${NC}"
+
+        
+        # Install package
+        if sudo apt install -y "$package"; then
+            echo "✓ $package installed successfully"
+        else
+            echo "✗ Error installing $package"
+        fi
+        
+        echo "---"
+    done < "$APT_LIST_FILE"
+
+    echo "Process completed!"
+fi
+
 # install cockpit
 echo -e "- ${CYAN}Installing extra software${NC}"
-echo -e " * ${CYAN}Cockpit${NC}"
+echo " * ${CYAN}Cockpit${NC}"
 . /etc/os-release
 echo "deb http://deb.debian.org/debian ${VERSION_CODENAME}-backports main" > \
     /etc/apt/sources.list.d/backports.list
 apt update && apt install -t ${VERSION_CODENAME}-backports cockpit -y
 
 # install dry to manage docker
-echo -e " * ${CYAN}Dry for Docker${NC}"
+echo " * ${CYAN}Dry for Docker${NC}"
 curl -sSf https://moncho.github.io/dry/dryup.sh | sh
 chmod 755 /usr/local/bin/dry
+
+# install Atuin 
+echo " * ${CYAN}Atuin${NC}"
+curl --proto '=https' --tlsv1.2 -LsSf https://setup.atuin.sh | sh
 
 echo -e "- ${GREEN}Job done. Remember to log off to apply sudo permissions.${NC}"
 exit
