@@ -67,7 +67,7 @@ echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.
 
 # apt-get update && apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin -y
 
-
+curl -sSL https://raw.githubusercontent.com/d00m4n/insfrastructure/refs/heads/main/apt.list -o "$APT_LIST_FILE"
 # Check if file exists and proceed only if it does
 if [ -f "$APT_LIST_FILE" ]; then
     echo -e "- ${CYAN}Reading packages from $APT_LIST_FILE...${NC}"
@@ -102,23 +102,31 @@ if [ -f "$APT_LIST_FILE" ]; then
 fi
 
 # install cockpit
-echo -e "- ${CYAN}Installing extra software${NC}"
-echo " * ${CYAN}Cockpit${NC}"
+echo "- ${CYAN}Installing extra software${NC}"
+echo "- ${CYAN}Cockpit${NC}"
 . /etc/os-release
 echo "deb http://deb.debian.org/debian ${VERSION_CODENAME}-backports main" > \
     /etc/apt/sources.list.d/backports.list
 apt update && apt install -t ${VERSION_CODENAME}-backports cockpit -y
 
 # install dry to manage docker
-echo " * ${CYAN}Dry for Docker${NC}"
+echo "- ${CYAN}Dry for Docker${NC}"
 curl -sSf https://moncho.github.io/dry/dryup.sh | sh
 chmod 755 /usr/local/bin/dry
 
 # install Atuin 
-echo " * ${CYAN}Atuin${NC}"
+echo "- ${CYAN}Atuin${NC}"
 curl --proto '=https' --tlsv1.2 -LsSf https://setup.atuin.sh | sh
 
-echo -e "- ${GREEN}Job done. Remember to log off to apply sudo permissions.${NC}"
+# install startship
+echo "- ${CYAN}StartShip${NC}"
+curl -sS https://starship.rs/install.sh | sh -s -- --force
+echo 'eval "$(starship init bash)"' >> /home/$user/.bashrc
+echo "- ${CYAN}Configuring startShip${NC}"
+mkdir -p /home/$user/.config/starship
+curl -sSL https://raw.githubusercontent.com/d00m4n/Starship/refs/heads/main/starship.toml -o /home/$user/.config/starship.toml
+
+echo "- ${GREEN}Job done. Remember to log off to apply sudo permissions.${NC}"
 exit
 # todo imports from github
 path="../bots"
