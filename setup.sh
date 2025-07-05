@@ -1,6 +1,6 @@
 
 #!/bin/bash
-EOF 
+
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 GREEN='\033[0;32m'
@@ -122,20 +122,20 @@ curl --proto '=https' --tlsv1.2 -LsSf https://setup.atuin.sh | sh
 # install startship
 echo "- ${CYAN}StartShip${NC}"
 curl -sS https://starship.rs/install.sh | sh -s -- --force
-# echo 'eval "$(starship init bash)"' >> /home/$user/.bashrc
+if ! grep -q "atuin init bash" /home/$user/.bashrc; then
+    echo 'eval "$(atuin init bash)"' >> /home/$user/.bashrc
+fi
 
 echo "- ${CYAN}Configuring startShip${NC}"
 mkdir -p /home/$user/.config/starship
+chown $user:$user /home/$user/.config -R
 curl -sSL https://raw.githubusercontent.com/d00m4n/Starship/refs/heads/main/starship.toml -o /home/$user/.config/starship.toml
-chown $user:$user .config -R
 
 # Generate SSH keys
 echo "- ${CYAN}Generating SSH keys${NC}"
 [ ! -f /home/$user/.ssh/id_ed25519 ] && ssh-keygen -t ed25519 -f /home/$user/.ssh/id_ed25519 -q
 
 echo "- ${GREEN}Job done. Remember to log off to apply sudo permissions.${NC}"
-
-cat <<EOF
 
 exit
 # todo imports from github
