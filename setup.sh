@@ -122,8 +122,8 @@ curl --proto '=https' --tlsv1.2 -LsSf https://setup.atuin.sh | sh
 # install startship
 echo "- ${CYAN}StartShip${NC}"
 curl -sS https://starship.rs/install.sh | sh -s -- --force
-if ! grep -q "atuin init bash" /home/$user/.bashrc; then
-    echo 'eval "$(atuin init bash)"' >> /home/$user/.bashrc
+if ! grep -q "starship init bash" /home/$user/.bashrc; then
+    echo 'eval "$(starship init bash)"' >> /home/$user/.bashrc
 fi
 
 echo "- ${CYAN}Configuring startShip${NC}"
