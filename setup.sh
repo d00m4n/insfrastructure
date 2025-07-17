@@ -7,7 +7,7 @@ GREEN='\033[0;32m'
 CYAN='\033[0;36m'
 # Package list file
 APT_LIST_FILE="apt.list"
-
+BTOP_TMP_PATH="/tmp/btop"
 
 #Check if the script is running as root
 if [[ $EUID -ne 0 ]]; then
@@ -90,9 +90,9 @@ if [ -f "$APT_LIST_FILE" ]; then
         
         # Install package
         if sudo apt install -y "$package"; then
-            echo "✓ $package installed successfully"
+            echo "${CYAN}✓${NC} $package installed successfully"
         else
-            echo "✗ Error installing $package"
+            echo "${CYAN}✗${NC} Error installing $package"
         fi
         
         echo "---"
@@ -116,12 +116,12 @@ chmod 755 /usr/local/bin/dry
 
 # install Atuin 
 echo "- ${CYAN}Atuin${NC}"
-curl --proto '=https' --tlsv1.2 -LsSf https://setup.atuin.sh | sh
+curl --proto '=https' --tlsv1.2 -LsSf https://setup.atuin.sh | sh > /dev/null
 #echo 'eval "$(atuin init bash)"' >> /home/$user/.bashrc
 
 # install startship
 echo "- ${CYAN}StartShip${NC}"
-curl -sS https://starship.rs/install.sh | sh -s -- --force
+curl -sS https://starship.rs/install.sh | sh -s -- --force > /dev/null
 if ! grep -q "starship init bash" /home/$user/.bashrc; then
     echo 'eval "$(starship init bash)"' >> /home/$user/.bashrc
 fi
@@ -131,12 +131,33 @@ mkdir -p /home/$user/.config/starship
 chown $user:$user /home/$user/.config -R
 curl -sSL https://raw.githubusercontent.com/d00m4n/Starship/refs/heads/main/starship.toml -o /home/$user/.config/starship.toml
 
+# install btop
+
+echo "- ${CYAN}Btop${NC}"
+if [ -e "/usr/local/bin/btop" ]; then
+    echo "${GREEN}✓ ${BLUE}Btop already installed.${NC}"
+else
+    git clone https://github.com/aristocratos/btop.git $BTOP_TMP_PATH && cd $BTOP_TMP_PATH
+    # 
+    echo "- ${CYAN}Configuring...${NC}"
+    cmake -B build -G Ninja
+    echo "- ${CYAN}Building...${NC}"
+    cmake --build build
+    echo "- ${CYAN}Installing...${NC}"
+    cmake --install build
+    rm -rf $BTOP_TMP_PATH
+    echo "${GREEN}✓ ${BLUE}Btop installed successfully.${NC}"
+fi
+
+
 # Generate SSH keys
 echo "- ${CYAN}Generating SSH keys${NC}"
 [ ! -f /home/$user/.ssh/id_ed25519 ] && ssh-keygen -t ed25519 -f /home/$user/.ssh/id_ed25519 -q
 
+echo "- ${RED}Clean APT${NC}"
+sudo apt autoremove -y > /dev/null
+sudo apt clean > /dev/null
 echo "- ${GREEN}Job done. Remember to log off to apply sudo permissions.${NC}"
-
 exit
 # todo imports from github
 path="../bots"
