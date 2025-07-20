@@ -1,0 +1,30 @@
+#!/bin/bash
+
+if [ $# -eq 0 ]; then
+    # No s'ha passat cap paràmetre
+    IUSER=$USER
+else
+    # S'ha passat un paràmetre
+    IUSER=$1
+fi
+if ! grep -q "nvim" /home/$1/.bash_aliases; then
+    echo "User: $IUSER"
+    VERSION="0.11.3"
+    curl -sSL https://github.com/neovim/neovim/releases/download/v$VERSION/nvim-linux-x86_64.tar.gz -o /tmp/nvim-linux-x86_64.tar.gz
+    tar xzf /tmp/nvim-linux-x86_64.tar.gz -C /usr/local --strip-components=1
+    mv /home/$IUSER/.config/nvim{,.bak}  2>/dev/null
+    mv /home/$IUSER/.local/share/nvim{,.bak} 2>/dev/null
+    mv /home/$IUSER/.local/state/nvim{,.bak} 2>/dev/null
+    mv /home/$IUSER/.cache/nvim{,.bak} 2>/dev/null
+    git clone https://github.com/LazyVim/starter /home/$IUSER/.config/nvim
+    chown -R $IUSER:$IUSER /home/$IUSER/.config/nvim
+    rm -rf /home/$IUSER/.config/nvim/.git
+    echo "alias vi='nvim'" >> /home/$IUSER/.bash_aliases
+    chown -R $IUSER:$IUSER /home/$IUSER/.bash_aliases
+    sudo -u $IUSER nvim --headless "+Lazy! sync" +qa
+    echo -e "${GREEN}✓ ${BLUE}Lazyvim installed.${NC}"
+else
+    echo -e "${GREEN}✓ ${BLUE}Lazyvim already installed.${NC}"
+fi
+# nvim --headless "+Lazy! sync" +qa
+# touch /home/$IUSER/.config/nvim/lazy.done
