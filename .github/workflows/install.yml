@@ -7,7 +7,7 @@ on:
     branches: [ main ]
     paths:
       - 'install.sh'
-
+  workflow_dispatch: 
 # Variables globals
 env:
   FTP_SERVER: ftp.doomans.com
