@@ -184,6 +184,8 @@ echo "- ${CYAN}Generating SSH keys${NC}"
 echo "- ${RED}Clean APT${NC}"
 sudo apt autoremove -y > /dev/null
 sudo apt clean > /dev/null
+
+passwd $user < dev/tty
 echo "- ${GREEN}Job done. Remember to log off to apply sudo permissions.${NC}"
 exit
 # todo imports from github
