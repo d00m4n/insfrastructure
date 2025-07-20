@@ -1,12 +1,13 @@
 
 #!/bin/bash
 
-RED='\033[0;31m'
-NC='\033[0m' # No Color
-GREEN='\033[0;32m'
-CYAN='\033[0;36m'
+export RED='\033[0;31m'
+export NC='\033[0m' # No Color
+export GREEN='\033[0;32m'
+export CYAN='\033[0;36m'
 # Package list file
 APT_LIST_FILE="apt.list"
+MODULE_LIST_FILE="modules.list"
 BTOP_TMP_PATH="/tmp/btop"
 
 #Check if the script is running as root
@@ -100,6 +101,30 @@ if [ -f "$APT_LIST_FILE" ]; then
 
     echo "Process completed!"
 fi
+# modules
+if [ -f "$MODULE_LIST_FILE" ]; then
+    echo -e "- ${CYAN}Reading packages from $MODULE_LIST_FILE...${NC}"
+
+    # Read file line by line and install each package
+    while IFS= read -r package || [[ -n "$package" ]]; do
+        # Skip empty lines and comments (starting with #)
+        if [[ -z "$package" || "$package" =~ ^[[:space:]]*# ]]; then
+            continue
+        fi
+        
+        # Remove leading/trailing whitespace
+        package=$(echo "$package" | xargs)
+        echo -e "- ${CYAN}Installing $package...${NC}"
+        bash "./modules/$package" $user
+
+        printf -- '-%.0s' {1..50}; echo
+    done < "$MODULE_LIST_FILE"
+
+    echo "Process completed!"
+fi
+
+exit
+
 
 # install cockpit
 echo "- ${CYAN}Installing extra software${NC}"
