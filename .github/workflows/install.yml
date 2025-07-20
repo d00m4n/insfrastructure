@@ -1,74 +1,52 @@
 # .github/workflows/deploy.yml
 name: Auto Deploy to Website
 
-# Quan executar
 on:
-  push:
-    branches: [ main ]
-    paths:
-      - 'install.sh'
   workflow_dispatch: 
 
-# Variables globals
 env:
   FTP_SERVER: ftp.doomans.com
   REMOTE_PATH: /web
 
-# Tasques
 jobs:
-  deploy:  # ← FALTAVA: nom del job
-    runs-on: ubuntu-latest  # ← FALTAVA: on executar
+  deploy:
+    runs-on: ubuntu-latest
     
-    steps:  # ← FALTAVA: declaració de steps
-    # Primer cal descarregar el codi
+    steps:
     - name: Checkout code
       uses: actions/checkout@v4
     
-    # Instal·lar lftp
     - name: Install lftp
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y lftp
+      run: sudo apt-get update && sudo apt-get install -y lftp
     
-    # Debug credentials (sense mostrar password)
-    - name: Debug FTP connection
-      run: |
-        echo "🔍 Debugging FTP connection..."
-        echo "FTP Server: $FTP_SERVER"
-        echo "Remote Path: $REMOTE_PATH"
-        echo "Username length: ${#FTP_USERNAME}"
-        if [ -z "$FTP_USERNAME" ]; then
-          echo "❌ FTP_USERNAME is empty!"
-          exit 1
-        fi
-        if [ -z "$FTP_PASSWORD" ]; then
-          echo "❌ FTP_PASSWORD is empty!"
-          exit 1
-        fi
-        echo "✅ Credentials seem to be set"
+    - name: Test FTP connection
       env:
         FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
         FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
-    
-    # Deploy via FTP amb millor gestió d'errors
-    - name: Deploy to FTP
       run: |
-        echo "🚀 Starting FTP deployment..."
+        echo "Testing FTP connection..."
+        echo "Username: $FTP_USERNAME (length: ${#FTP_USERNAME})"
+        
         lftp -c "
         set ssl:verify-certificate no
         set ftp:ssl-allow no
         open -u $FTP_USERNAME,$FTP_PASSWORD $FTP_SERVER
-        lcd $GITHUB_WORKSPACE
-        cd $REMOTE_PATH
-        put install.sh
+        ls
+        pwd
         bye
         "
+    
+    - name: Deploy file
       env:
         FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
         FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
-    
-    # Notificar èxit
-    - name: Notification
       run: |
-        echo "✅ Deploy completat!"
-        echo "Fitxers actualitzats a https://doomans.com/scripts/"
+        lftp -c "
+        set ssl:verify-certificate no
+        set ftp:ssl-allow no
+        open -u $FTP_USERNAME,$FTP_PASSWORD $FTP_SERVER
+        cd $REMOTE_PATH
+        put install.sh
+        ls -la
+        bye
+        "
