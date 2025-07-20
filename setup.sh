@@ -125,8 +125,6 @@ if [ -f "$MODULE_LIST_FILE" ]; then
     echo "Process completed!"
 fi
 
-exit
-
 
 # install cockpit
 echo "- ${CYAN}Installing extra software${NC}"
@@ -184,9 +182,9 @@ echo "- ${CYAN}Generating SSH keys${NC}"
 echo "- ${RED}Clean APT${NC}"
 sudo apt autoremove -y > /dev/null
 sudo apt clean > /dev/null
-echo "User $user password: "
-read -s -p "Password: " password < /dev/tty
-echo "$user:password" | chpasswd
+# echo "User $user password: "
+# read -s -p "Password: " password < /dev/tty
+# echo "$user:password" | chpasswd
 echo "- ${GREEN}Job done. Remember to log off to apply sudo permissions.${NC}"
 exit
 # todo imports from github
