@@ -1,0 +1,85 @@
+# .github/workflows/deploy.yml
+name: Auto Deploy to Website
+
+# Quan executar
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'install.sh'
+
+# Variables globals
+env:
+  FTP_SERVER: ftp.doomans.com
+  REMOTE_PATH: /web
+
+# Tasques
+jobs:
+  deploy:
+    name: Deploy to FTP
+    runs-on: ubuntu-latest
+    
+    steps:
+    # 1. Descarregar codi del repositori
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    # 2. Instal·lar dependències si cal
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y lftp
+    
+    # 3. Preparar fitxers
+    - name: Prepare files
+      run: |
+        echo "Preparant fitxers per deployment..."
+        chmod +x install.sh setup.sh
+        ls -la
+    
+    # 4. Deploy via FTP
+    - name: Deploy to FTP
+      run: |
+        lftp -c "
+        set ssl:verify-certificate no
+        open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} $FTP_SERVER
+        lcd $GITHUB_WORKSPACE
+        cd $REMOTE_PATH
+        put install.sh
+        put setup.sh
+        mirror -R modules/ modules/
+        bye
+        "
+    
+    # 5. Notificar èxit
+    - name: Notification
+      run: |
+        echo "✅ Deploy completat!"
+        echo "Fitxers actualitzats a https://doomans.com/scripts/"
+
+  # Job paral·lel per testing
+  test:
+    name: Test scripts
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Test install script
+      run: |
+        # Verificar sintaxi bash
+        bash -n install.sh
+        bash -n setup.sh
+        echo "✅ Scripts sintàcticament correctes"
+        
+    - name: Test modules
+      run: |
+        # Verificar que existeixen els mòduls
+        if [ -d "modules" ]; then
+          echo "✅ Carpeta modules trobada"
+          ls -la modules/
+        else
+          echo "❌ No es troba la carpeta modules"
+          exit 1
+        fi
