@@ -8,14 +8,29 @@ on:
     paths:
       - 'install.sh'
   workflow_dispatch: 
+
 # Variables globals
 env:
   FTP_SERVER: ftp.doomans.com
   REMOTE_PATH: /web
 
 # Tasques
-jobs:  
-    # 4. Deploy via FTP
+jobs:
+  deploy:  # ← FALTAVA: nom del job
+    runs-on: ubuntu-latest  # ← FALTAVA: on executar
+    
+    steps:  # ← FALTAVA: declaració de steps
+    # Primer cal descarregar el codi
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    # Instal·lar lftp
+    - name: Install lftp
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y lftp
+    
+    # Deploy via FTP
     - name: Deploy to FTP
       run: |
         lftp -c "
@@ -27,9 +42,8 @@ jobs:
         bye
         "
     
-    # 5. Notificar èxit
+    # Notificar èxit
     - name: Notification
       run: |
         echo "✅ Deploy completat!"
         echo "Fitxers actualitzats a https://doomans.com/scripts/"
-
