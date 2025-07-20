@@ -69,6 +69,8 @@ echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.
 # apt-get update && apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin -y
 
 curl -sSL https://raw.githubusercontent.com/d00m4n/insfrastructure/refs/heads/main/apt.list -o "$APT_LIST_FILE"
+curl -sSL https://raw.githubusercontent.com/d00m4n/insfrastructure/refs/heads/main/modules.list -o "$MODULE_LIST_FILE"
+
 # Check if file exists and proceed only if it does
 if [ -f "$APT_LIST_FILE" ]; then
     echo -e "- ${CYAN}Reading packages from $APT_LIST_FILE...${NC}"

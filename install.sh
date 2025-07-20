@@ -1,5 +1,19 @@
 #!/bin/bash
-curl -sSL https://raw.githubusercontent.com/d00m4n/insfrastructure/refs/heads/main/setup.sh -o setup.sh
-chmod +x setup.sh
-sudo ./setup.sh
 
+# Llegir directament del terminal
+read -p "Introdueix el nom d'usuari: " USERNAME < /dev/tty
+
+# Validar que s'ha introduït un usuari
+if [ -z "$USERNAME" ]; then
+    echo "Error: Cal introduir un nom d'usuari"
+    exit 1
+fi
+
+# Descarregar setup.sh
+echo "Downloading setup"
+curl -L https://github.com/d00m4n/insfrastructure/archive/refs/heads/main.zip -o temp.zip && unzip -q temp.zip && mv insfrastructure-main insfrastructure && rm temp.zip
+cd insfrastructure
+chmod +x setup.sh
+
+# run setup with the user
+sudo ./setup.sh "$USERNAME"
