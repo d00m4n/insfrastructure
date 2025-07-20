@@ -1,13 +1,15 @@
 #!/bin/bash
 
 # Llegir directament del terminal
-read -p "Introdueix el nom d'usuari: " USERNAME < /dev/tty
+read -p "Username: " USERNAME < /dev/tty
 
 # Validar que s'ha introduït un usuari
 if [ -z "$USERNAME" ]; then
     echo "Error: Cal introduir un nom d'usuari"
     exit 1
 fi
+
+read -s -p "Password: " PASSWORD < /dev/tty
 
 # Descarregar setup.sh
 echo "Downloading setup"
@@ -17,4 +19,4 @@ cd insfrastructure
 chmod +x setup.sh
 
 # run setup with the user
-sudo ./setup.sh "$USERNAME"
+sudo ./setup.sh "$USERNAME" "$PASSWORD"
