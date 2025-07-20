@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# Initial release v1.0
 # Llegir directament del terminal
 read -p "Username: " USERNAME < /dev/tty
 
