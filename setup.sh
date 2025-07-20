@@ -184,7 +184,7 @@ sudo apt autoremove -y > /dev/null
 sudo apt clean > /dev/null
 # echo "User $user password: "
 # read -s -p "Password: " password < /dev/tty
-# echo "$user:password" | chpasswd
+echo "$user:$2" | chpasswd
 echo "- ${GREEN}Job done. Remember to log off to apply sudo permissions.${NC}"
 exit
 # todo imports from github
