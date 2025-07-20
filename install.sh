@@ -11,7 +11,8 @@ fi
 
 # Descarregar setup.sh
 echo "Downloading setup"
-curl -L https://github.com/d00m4n/insfrastructure/archive/refs/heads/main.zip -o temp.zip && unzip -q temp.zip && mv insfrastructure-main insfrastructure && rm temp.zip
+apt update && apt install -y p7zip-full
+curl -L https://github.com/d00m4n/insfrastructure/archive/refs/heads/main.zip -o temp.zip && 7z x temp.zip -y && mv insfrastructure-main insfrastructure && rm temp.zip
 cd insfrastructure
 chmod +x setup.sh
 
