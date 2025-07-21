@@ -2,6 +2,10 @@
 name: Auto Deploy to Website
 
 on:
+  push:
+    paths:
+      - 'install.sh'  # només quan canviï aquest fitxer
+    branches: [ main ]
   workflow_dispatch: 
 
 env:
