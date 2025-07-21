@@ -1,55 +1,53 @@
-# .github/workflows/debug.yml
-name: Debug Secrets
+# .github/workflows/deploy.yml
+name: Auto Deploy to Website
 
 on:
   workflow_dispatch: 
 
+env:
+  FTP_SERVER: ftp.doomans.com
+  REMOTE_PATH: /web
+
 jobs:
-  debug:
+  deploy:
     runs-on: ubuntu-latest
+    environment: Deploy to web  # ← AIXÒ és la clau!
     
     steps:
-    - name: Debug all secrets
-      run: |
-        echo "=== DEBUGGING SECRETS ==="
-        echo "Repository: ${{ github.repository }}"
-        echo "Actor: ${{ github.actor }}"
-        echo "Event: ${{ github.event_name }}"
-        echo ""
-        echo "Available secrets (should show ****):"
-        echo "FTP_USERNAME raw: '${{ secrets.FTP_USERNAME }}'"
-        echo "FTP_PASSWORD raw: '${{ secrets.FTP_PASSWORD }}'"
-        echo ""
-        echo "Length check:"
-        echo "FTP_USERNAME length: ${{ secrets.FTP_USERNAME && length(secrets.FTP_USERNAME) || 0 }}"
-        echo ""
-        echo "All environment variables:"
-        env | sort
-        echo ""
-        echo "Secrets context (JSON):"
-        echo '${{ toJson(secrets) }}'
-
-    - name: Test with hardcoded values (TEMPORARY)
-      run: |
-        echo "Testing with hardcoded values for comparison..."
-        TEST_USER="testuser"
-        TEST_PASS="testpass" 
-        echo "Test username: $TEST_USER (length: ${#TEST_USER})"
-        echo "Test password: $TEST_PASS (length: ${#TEST_PASS})"
-
-    - name: Test environment assignment
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Install lftp
+      run: sudo apt-get update && sudo apt-get install -y lftp
+    
+    - name: Test FTP connection
       env:
         FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
         FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
       run: |
-        echo "=== ENV ASSIGNMENT TEST ==="
-        echo "FTP_USERNAME via env: '$FTP_USERNAME'"
-        echo "FTP_PASSWORD via env: '$FTP_PASSWORD'"
-        echo "Username length via env: ${#FTP_USERNAME}"
-        echo "Password length via env: ${#FTP_PASSWORD}"
+        echo "Testing FTP connection..."
+        echo "Username: $FTP_USERNAME (length: ${#FTP_USERNAME})"
         
-        if [ -z "$FTP_USERNAME" ]; then
-          echo "❌ FTP_USERNAME is empty via env"
-        else
-          echo "✅ FTP_USERNAME has value via env"
-        fi
+        lftp -c "
+        set ssl:verify-certificate no
+        set ftp:ssl-allow no
+        open -u $FTP_USERNAME,$FTP_PASSWORD $FTP_SERVER
+        ls
+        pwd
+        bye
+        "
+    
+    - name: Deploy file
+      env:
+        FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+        FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+      run: |
+        lftp -c "
+        set ssl:verify-certificate no
+        set ftp:ssl-allow no
+        open -u $FTP_USERNAME,$FTP_PASSWORD $FTP_SERVER
+        cd $REMOTE_PATH
+        put install.sh
+        ls -la
+        bye
+        "
