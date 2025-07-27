@@ -138,10 +138,11 @@ echo "deb http://deb.debian.org/debian ${VERSION_CODENAME}-backports main" > \
     /etc/apt/sources.list.d/backports.list
 apt update && apt install -t ${VERSION_CODENAME}-backports cockpit -y
 
-# install dry to manage docker
-echo "- ${CYAN}Dry for Docker${NC}"
-curl -sSf https://moncho.github.io/dry/dryup.sh | sh
-chmod 755 /usr/local/bin/dry
+# moved to modules
+# # install dry to manage docker
+# echo "- ${CYAN}Dry for Docker${NC}"
+# curl -sSf https://moncho.github.io/dry/dryup.sh | sh
+# chmod 755 /usr/local/bin/dry
 
 # install Atuin 
 echo "- ${CYAN}Atuin${NC}"
