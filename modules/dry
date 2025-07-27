@@ -1,3 +1,3 @@
 curl -sSf https://moncho.github.io/dry/dryup.sh | sh
 chmod 755 /usr/local/bin/dry
-echo "alias dry='sudo dry'" >> /home/$user/.bash_aliases
+echo "alias dry='sudo dry'" >> /home/$1/.bash_aliases
