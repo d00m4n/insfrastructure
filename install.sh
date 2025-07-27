@@ -10,12 +10,13 @@ if [ -z "$USERNAME" ]; then
 fi
 
 read -s -p "Password: " PASSWORD < /dev/tty
-
 # Descarregar setup.sh
 echo "Downloading setup"
 apt update && apt install -y p7zip-full
 curl -L https://github.com/d00m4n/insfrastructure/archive/refs/heads/main.zip -o temp.zip && 7z x temp.zip -y && mv insfrastructure-main insfrastructure && rm temp.zip
 cd insfrastructure
+# select services to install
+bash -c select-services.sh
 chmod +x setup.sh
 
 # run setup with the user

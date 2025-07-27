@@ -7,7 +7,8 @@ export GREEN='\033[0;32m'
 export CYAN='\033[0;36m'
 # Package list file
 APT_LIST_FILE="apt.list"
-MODULE_LIST_FILE="modules.list"
+# MODULE_LIST_FILE="modules.list"
+$MODULE_LIST_FILE="modules_selected.list"
 BTOP_TMP_PATH="/tmp/btop"
 
 #Check if the script is running as root
@@ -68,8 +69,9 @@ echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.
 
 # apt-get update && apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin -y
 
-curl -sSL https://raw.githubusercontent.com/d00m4n/insfrastructure/refs/heads/main/apt.list -o "$APT_LIST_FILE"
-curl -sSL https://raw.githubusercontent.com/d00m4n/insfrastructure/refs/heads/main/modules.list -o "$MODULE_LIST_FILE"
+# deprecated
+# curl -sSL https://raw.githubusercontent.com/d00m4n/insfrastructure/refs/heads/main/apt.list -o "$APT_LIST_FILE"
+# curl -sSL https://raw.githubusercontent.com/d00m4n/insfrastructure/refs/heads/main/modules.list -o "$MODULE_LIST_FILE"
 
 # Check if file exists and proceed only if it does
 if [ -f "$APT_LIST_FILE" ]; then
@@ -104,8 +106,8 @@ if [ -f "$APT_LIST_FILE" ]; then
     echo "Process completed!"
 fi
 # modules
-bash -c select-services.sh
-$MODULE_LIST_FILE="modules_selected.list"
+
+
 if [ -f "$MODULE_LIST_FILE" ]; then
     echo -e "- ${CYAN}Reading packages from $MODULE_LIST_FILE...${NC}"
 
