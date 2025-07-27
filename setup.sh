@@ -8,7 +8,7 @@ export CYAN='\033[0;36m'
 # Package list file
 APT_LIST_FILE="apt.list"
 # MODULE_LIST_FILE="modules.list"
-$MODULE_LIST_FILE="modules_selected.list"
+MODULE_LIST_FILE="modules_selected.list"
 BTOP_TMP_PATH="/tmp/btop"
 
 #Check if the script is running as root
