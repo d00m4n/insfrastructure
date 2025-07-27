@@ -104,7 +104,8 @@ if [ -f "$APT_LIST_FILE" ]; then
     echo "Process completed!"
 fi
 # modules
-bash -c 
+bash -c select-services.sh
+$MODULE_LIST_FILE="modules_selected.list"
 if [ -f "$MODULE_LIST_FILE" ]; then
     echo -e "- ${CYAN}Reading packages from $MODULE_LIST_FILE...${NC}"
 
