@@ -179,9 +179,9 @@ else
 fi
 
 
-# Generate SSH keys
-echo "- ${CYAN}Generating SSH keys${NC}"
-[ ! -f /home/$user/.ssh/id_ed25519 ] && ssh-keygen -t ed25519 -f /home/$user/.ssh/id_ed25519 -q
+# Generate SSH keys - deprecated
+# echo "- ${CYAN}Generating SSH keys${NC}"
+# [ ! -f /home/$user/.ssh/id_ed25519 ] && ssh-keygen -t ed25519 -f /home/$user/.ssh/id_ed25519 -q
 
 echo "- ${RED}Clean APT${NC}"
 sudo apt autoremove -y > /dev/null

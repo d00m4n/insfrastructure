@@ -20,4 +20,4 @@ bash select-services.sh
 chmod +x setup.sh
 
 # run setup with the user
-sudo ./setup.sh "$USERNAME" "$PASSWORD"
+./setup.sh "$USERNAME" "$PASSWORD"
