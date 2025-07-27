@@ -1,3 +1,8 @@
-curl -sSf https://moncho.github.io/dry/dryup.sh | sh
-chmod 755 /usr/local/bin/dry
-echo "alias dry='sudo dry'" >> /home/$1/.bash_aliases
+if ! grep -q "dry" /home/$1/.bash_aliases; then
+  curl -sSf https://moncho.github.io/dry/dryup.sh | sh
+  chmod 755 /usr/local/bin/dry
+  echo "alias dry='sudo dry'" >> /home/$1/.bash_aliases
+else
+  echo -e "${GREEN}✓ ${BLUE}Dry already installed.${NC}"
+fi
+
