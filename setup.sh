@@ -127,6 +127,9 @@ if [ -f "$MODULE_LIST_FILE" ]; then
     done < "$MODULE_LIST_FILE"
 
     echo "Process completed!"
+else 
+    echo -e "- ${RED}Module list not found.${NC}"
+    exit 1
 fi
 
 
