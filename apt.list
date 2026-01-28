@@ -3,3 +3,4 @@ docker-ce-cli
 containerd.io
 docker-compose-plugin
 openssh-server
+jq
