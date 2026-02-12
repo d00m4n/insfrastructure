@@ -4,3 +4,4 @@ containerd.io
 docker-compose-plugin
 openssh-server
 jq
+duf

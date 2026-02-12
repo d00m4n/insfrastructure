@@ -102,7 +102,6 @@ if [ -f "$APT_LIST_FILE" ]; then
         
         echo "---"
     done < "$APT_LIST_FILE"
-
     echo "Process completed!"
 fi
 # modules
